@@ -1,0 +1,6 @@
+author: ZephireNZ
+database: false
+main: nz.co.noirland.zeohcore.ZephCore
+name: ZephCore
+startup: postworld
+version: ${version}
