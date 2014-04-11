@@ -1,4 +1,4 @@
-package nz.co.noirland;
+package nz.co.noirland.zephcore;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
