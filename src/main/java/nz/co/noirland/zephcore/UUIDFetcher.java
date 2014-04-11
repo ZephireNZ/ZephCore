@@ -1,6 +1,5 @@
 package nz.co.noirland.zephcore;
 
-import com.google.common.collect.ImmutableList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -11,22 +10,40 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.Callable;
 
 /**
  * <a href='https://gist.github.com/evilmidget38/df8dcd7855937e9d1e1f'>Created by evilmidget38</a>
  */
-public class UUIDFetcher implements Callable<Map<String, UUID>> {
+public class UUIDFetcher {
     private static final int MAX_SEARCH = 100;
     private static final String PROFILE_URL = "https://api.mojang.com/profiles/page/";
     private static final String AGENT = "minecraft";
-    private final JSONParser jsonParser = new JSONParser();
-    private final List<String> names;
-    public UUIDFetcher(List<String> names) {
-        this.names = ImmutableList.copyOf(names);
+    private static final JSONParser jsonParser = new JSONParser();
+    private static final Map<String, UUID> uuidCache = new HashMap<String, UUID>();
+
+    public static Map<String, UUID> getUUIDs(List<String> names) {
+        Map<String, UUID> ret = new HashMap<String, UUID>();
+        List<String> uncached = new ArrayList<String>();
+        for(String name : names) {
+            if(uuidCache.containsKey(name)) {
+                ret.put(name, uuidCache.get(name));
+            }else{
+                uncached.add(name);
+            }
+        }
+        if(!uncached.isEmpty()) {
+            try {
+                Map<String, UUID> freshUUIDs = getFreshUUIDs(uncached);
+                ret.putAll(freshUUIDs);
+                uuidCache.putAll(freshUUIDs);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return ret;
     }
 
-    public Map<String, UUID> call() throws Exception {
+    private static Map<String, UUID> getFreshUUIDs(List<String> names) throws Exception {
         Map<String, UUID> uuidMap = new HashMap<String, UUID>();
         String body = buildBody(names);
         for (int i = 1; i < MAX_SEARCH; i++) {
