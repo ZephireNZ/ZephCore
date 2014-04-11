@@ -1,6 +1,6 @@
 author: ZephireNZ
 database: false
-main: nz.co.noirland.zeohcore.ZephCore
+main: nz.co.noirland.zephcore.ZephCore
 name: ZephCore
 startup: postworld
 version: ${version}
