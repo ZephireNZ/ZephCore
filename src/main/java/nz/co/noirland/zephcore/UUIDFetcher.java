@@ -21,7 +21,15 @@ public class UUIDFetcher {
     private static final JSONParser jsonParser = new JSONParser();
     private static final Map<String, UUID> uuidCache = new HashMap<String, UUID>();
 
-    public static Map<String, UUID> getUUIDs(List<String> names) {
+    protected static void updatePlayer(String name, UUID uuid) {
+        uuidCache.put(name, uuid);
+    }
+
+    public static UUID getUUID(String name) {
+        return getUUIDs(new ArrayList<String>(Arrays.asList(name))).get(name);
+    }
+
+    public static Map<String, UUID> getUUIDs(Collection<String> names) {
         Map<String, UUID> ret = new HashMap<String, UUID>();
         List<String> uncached = new ArrayList<String>();
         for(String name : names) {
@@ -43,6 +51,7 @@ public class UUIDFetcher {
         return ret;
     }
 
+    //TODO: Update to new Mojang API method
     private static Map<String, UUID> getFreshUUIDs(List<String> names) throws Exception {
         Map<String, UUID> uuidMap = new HashMap<String, UUID>();
         String body = buildBody(names);
