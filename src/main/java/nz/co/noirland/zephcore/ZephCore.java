@@ -1,5 +1,6 @@
 package nz.co.noirland.zephcore;
 
+import nz.co.noirland.zephcore.database.AsyncDatabaseUpdateTask;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,15 +16,18 @@ public class ZephCore extends JavaPlugin implements Listener {
     private static ZephCore inst;
     private static Debug debug;
 
-    protected static ZephCore inst() {
+    public static ZephCore inst() {
         return inst;
     }
+
+    public static Debug debug() { return debug; }
 
     @Override
     public void onEnable() {
         inst = this;
         debug = new Debug(this, new File(getDataFolder(), "debug").exists());
         setupUUIDFetcher();
+        AsyncDatabaseUpdateTask.inst();
     }
 
     private void setupUUIDFetcher() {
@@ -40,7 +44,4 @@ public class ZephCore extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
         UUIDFetcher.updatePlayer(player.getName(), player.getUniqueId());
     }
-
-
-
 }
