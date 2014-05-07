@@ -1,8 +1,13 @@
 package nz.co.noirland.zephcore;
 
+import com.google.common.io.Files;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Debug {
@@ -11,10 +16,20 @@ public class Debug {
     private JavaPlugin plugin;
     boolean debug;
 
-    public Debug(JavaPlugin plugin, boolean debug) {
+    public Debug(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.debug = debug;
+        this.debug = isDebugEnabled();
         this.logger = plugin.getLogger();
+    }
+
+    private boolean isDebugEnabled() {
+        File debugFile = new File(ZephCore.inst().getDataFolder(), "debug");
+        try {
+            List<String> lines = Files.readLines(debugFile, Charset.defaultCharset());
+            return lines.contains(plugin.getName());
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     /**

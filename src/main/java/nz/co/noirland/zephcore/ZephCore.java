@@ -9,8 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-
 public class ZephCore extends JavaPlugin implements Listener {
 
     private static ZephCore inst;
@@ -25,7 +23,7 @@ public class ZephCore extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         inst = this;
-        debug = new Debug(this, new File(getDataFolder(), "debug").exists());
+        debug = new Debug(this);
         setupUUIDFetcher();
         AsyncDatabaseUpdateTask.inst();
     }
