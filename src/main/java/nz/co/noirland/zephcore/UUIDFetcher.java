@@ -2,22 +2,20 @@ package nz.co.noirland.zephcore;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 
-import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
 
 /**
- * <a href='https://gist.github.com/evilmidget38/df8dcd7855937e9d1e1f'>Created by evilmidget38</a>
+ * <a href='https://gist.github.com/evilmidget38/26d70114b834f71fb3b4'>Created by evilmidget38</a>
  */
 public class UUIDFetcher {
-    private static final int MAX_SEARCH = 100;
-    private static final String PROFILE_URL = "https://api.mojang.com/profiles/page/";
-    private static final String AGENT = "minecraft";
+    private static final double PROFILES_PER_REQUEST = 100;
+    private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
     private static final JSONParser jsonParser = new JSONParser();
     private static final Map<String, UUID> uuidCache = new HashMap<String, UUID>();
 
@@ -51,39 +49,54 @@ public class UUIDFetcher {
         return ret;
     }
 
-    //TODO: Update to new Mojang API method
     private static Map<String, UUID> getFreshUUIDs(List<String> names) throws Exception {
         Map<String, UUID> uuidMap = new HashMap<String, UUID>();
-        String body = buildBody(names);
-        for (int i = 1; i < MAX_SEARCH; i++) {
-            HttpURLConnection connection = createConnection(i);
+        int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
+        for (int i = 0; i < requests; i++) {
+            HttpURLConnection connection = createConnection();
+            String body = JSONArray.toJSONString(names.subList(i * 100, Math.min((i + 1) * 100, names.size())));
             writeBody(connection, body);
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
-            JSONArray array = (JSONArray) jsonObject.get("profiles");
-            Number count = (Number) jsonObject.get("size");
-            if (count.intValue() == 0) {
-                break;
-            }
+            JSONArray array = (JSONArray) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
             for (Object profile : array) {
                 JSONObject jsonProfile = (JSONObject) profile;
                 String id = (String) jsonProfile.get("id");
                 String name = (String) jsonProfile.get("name");
-                UUID uuid = UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" +id.substring(20, 32));
-                uuidMap.put(name, uuid);
+                UUID uuid = parseUUID(id);
+                uuidMap.put(getNameWithNonCase(names, name), uuid);
+            }
+        }
+        for(String name : names) {
+            if(!uuidMap.containsKey(name)) {
+                uuidMap.put(name, null);
             }
         }
         return uuidMap;
     }
 
-    private static void writeBody(HttpURLConnection connection, String body) throws Exception {
-        DataOutputStream writer = new DataOutputStream(connection.getOutputStream());
-        writer.write(body.getBytes());
-        writer.flush();
-        writer.close();
+    /**
+     * Returns the entry in names that is a case non-sensitive version of capsName.
+     * Used in implementation as Mojang returns case-corrected versions of names. This is not
+     * helpful when converting names in a database.
+     * @param names The original list of names
+     * @param capsName The case-corrected name returned
+     * @return The original name
+     */
+    private static String getNameWithNonCase(Collection<String> names, String capsName) {
+        for(String name : names) {
+            if(name.equalsIgnoreCase(capsName)) return name;
+        }
+        return capsName;
     }
 
-    private static HttpURLConnection createConnection(int page) throws Exception {
-        URL url = new URL(PROFILE_URL+page);
+    private static void writeBody(HttpURLConnection connection, String body) throws Exception {
+        OutputStream stream = connection.getOutputStream();
+        stream.write(body.getBytes());
+        stream.flush();
+        stream.close();
+    }
+
+    private static HttpURLConnection createConnection() throws Exception {
+        URL url = new URL(PROFILE_URL);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json");
@@ -92,15 +105,8 @@ public class UUIDFetcher {
         connection.setDoOutput(true);
         return connection;
     }
-    @SuppressWarnings("unchecked")
-    private static String buildBody(List<String> names) {
-        List<JSONObject> lookups = new ArrayList<JSONObject>();
-        for (String name : names) {
-            JSONObject obj = new JSONObject();
-            obj.put("name", name);
-            obj.put("agent", AGENT);
-            lookups.add(obj);
-        }
-        return JSONValue.toJSONString(lookups);
+
+    private static UUID parseUUID(String id) {
+        return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" +id.substring(20, 32));
     }
 }
