@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
-class CheckFallingTask extends BukkitRunnable {
+public class CheckFallingTask extends BukkitRunnable {
 
     private UUID player;
 
