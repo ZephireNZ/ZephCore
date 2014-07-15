@@ -1,28 +1,26 @@
-package nz.co.noirland.zephcore.database;
+package nz.co.noirland.zephcore.database.queries;
 
 public class Query {
 
     private Object[] values;
     private String query;
-    private String table;
 
     /**
      * An abstract query representation.
-     * @param length Size of the array to create
+     * @param nargs Number of args in query
      * @param query SQL PreparedStatement query to be executed.
      */
-    public Query(int length, String query, String table) {
-        this(new Object[length-1], query, table);
+    public Query(int nargs, String query) {
+        this(new Object[nargs-1], query);
     }
 
-    public Query(String query, String table) {
-        this(0, query, table);
+    public Query(String query) {
+        this(0, query);
     }
 
-    public Query(Object[] values, String query, String table) {
+    public Query(Object[] values, String query) {
         this.values = values;
         this.query = query;
-        this.table = table;
     }
 
     protected void setValue(int key, Object value) {
@@ -37,9 +35,5 @@ public class Query {
 
     public String getQuery() {
         return query;
-    }
-
-    public String getTable() {
-        return table;
     }
 }

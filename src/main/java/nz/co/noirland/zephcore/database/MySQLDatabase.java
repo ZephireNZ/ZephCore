@@ -3,6 +3,7 @@ package nz.co.noirland.zephcore.database;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import nz.co.noirland.zephcore.Debug;
 import nz.co.noirland.zephcore.database.queries.GetSchemaQuery;
+import nz.co.noirland.zephcore.database.queries.Query;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,7 +37,7 @@ public abstract class MySQLDatabase {
     }
 
     public PreparedStatement getStatement(Query query) {
-        String q = query.getQuery().replaceAll("\\{TABLE\\}", getPrefix() + query.getTable());
+        String q = query.getQuery().replaceAll("\\{PREFIX\\}", getPrefix());
 
         try {
             PreparedStatement statement;
@@ -70,7 +71,7 @@ public abstract class MySQLDatabase {
         }
 
         for(Schema schema : schemas.tailMap(version + 1).values()) {
-            schema.updateDatabase();
+            schema.run();
         }
 
     }

@@ -1,14 +1,11 @@
 package nz.co.noirland.zephcore.database.queries;
 
-import nz.co.noirland.zephcore.database.DatabaseTables;
-import nz.co.noirland.zephcore.database.Query;
-
 public class GetSchemaQuery extends Query {
 
-    private static final String QUERY = "SELECT `version` FROM `{TABLE}`";
+    private static final String QUERY = "SELECT `version` FROM `{PREFIX}_schema`";
 
     public GetSchemaQuery() {
-        super(QUERY, DatabaseTables.SCHEMA);
+        super(QUERY);
     }
 
 }
