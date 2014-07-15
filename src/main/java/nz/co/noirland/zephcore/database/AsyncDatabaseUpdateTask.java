@@ -1,19 +1,20 @@
 package nz.co.noirland.zephcore.database;
 
 import nz.co.noirland.zephcore.ZephCore;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-public class AsyncDatabaseUpdateTask extends BukkitRunnable {
+public class AsyncDatabaseUpdateTask implements Runnable {
 
-    public final static ConcurrentLinkedQueue<PreparedStatement> updates = new ConcurrentLinkedQueue<PreparedStatement>();
+    public final static LinkedBlockingQueue<PreparedStatement> updates = new LinkedBlockingQueue<PreparedStatement>();
     private static AsyncDatabaseUpdateTask inst;
 
+    private static volatile boolean stop = false;
+
     private AsyncDatabaseUpdateTask() {
-        runTaskTimerAsynchronously(ZephCore.inst(), 0, 1);
+        new Thread(this).start();
     }
 
     public static AsyncDatabaseUpdateTask inst() {
@@ -23,11 +24,15 @@ public class AsyncDatabaseUpdateTask extends BukkitRunnable {
         return inst;
     }
 
+    public static void stop() {
+        stop = true;
+    }
+
     @Override
     public void run() {
-        if(!updates.isEmpty()) {
-            while(!updates.isEmpty()) {
-                PreparedStatement statement = updates.poll();
+        while(!stop) {
+            try {
+                PreparedStatement statement = updates.take();
                 try {
                     if(statement.isClosed()) continue;
                     statement.execute();
@@ -36,12 +41,12 @@ public class AsyncDatabaseUpdateTask extends BukkitRunnable {
                     ZephCore.debug().warning("Failed to execute update statement " + statement.toString(), e);
                 } finally {
                     try {
-                        statement.close();
+                        statement.getConnection().close();
                     } catch (SQLException e) {
-                        ZephCore.debug().warning("Could not close statement " + statement.toString(), e);
+                        ZephCore.debug().warning("Could not close connection " + statement.toString(), e);
                     }
                 }
-            }
+            } catch (InterruptedException ignored) {}
         }
     }
 
