@@ -1,14 +1,14 @@
 package nz.co.noirland.zephcore.database;
 
 import nz.co.noirland.zephcore.ZephCore;
+import nz.co.noirland.zephcore.database.queries.Query;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class AsyncDatabaseUpdateTask implements Runnable {
 
-    public final static LinkedBlockingQueue<PreparedStatement> updates = new LinkedBlockingQueue<PreparedStatement>();
+    private final static LinkedBlockingQueue<Query> queries = new LinkedBlockingQueue<Query>();
     private static AsyncDatabaseUpdateTask inst;
 
     private static volatile boolean stop = false;
@@ -32,22 +32,18 @@ public class AsyncDatabaseUpdateTask implements Runnable {
     public void run() {
         while(!stop) {
             try {
-                PreparedStatement statement = updates.take();
+                Query query = queries.take();
                 try {
-                    if(statement.isClosed()) continue;
-                    statement.execute();
-                    ZephCore.debug().debug("Executed db update statement " + statement.toString());
+                    query.execute();
+                    ZephCore.debug().debug("Executed db update statement " + query.toString());
                 } catch (SQLException e) {
-                    ZephCore.debug().warning("Failed to execute update statement " + statement.toString(), e);
-                } finally {
-                    try {
-                        statement.getConnection().close();
-                    } catch (SQLException e) {
-                        ZephCore.debug().warning("Could not close connection " + statement.toString(), e);
-                    }
+                    ZephCore.debug().warning("Failed to execute update statement " + query.toString(), e);
                 }
             } catch (InterruptedException ignored) {}
         }
     }
 
+    public static void addQuery(Query query) {
+        queries.add(query);
+    }
 }

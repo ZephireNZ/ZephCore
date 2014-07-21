@@ -3,14 +3,12 @@ package nz.co.noirland.zephcore.database;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import nz.co.noirland.zephcore.Debug;
 import nz.co.noirland.zephcore.database.queries.GetSchemaQuery;
-import nz.co.noirland.zephcore.database.queries.Query;
 
-import java.sql.PreparedStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 public abstract class MySQLDatabase {
 
@@ -18,7 +16,7 @@ public abstract class MySQLDatabase {
 
     protected SortedMap<Integer, Schema> schemas = new TreeMap<Integer, Schema>();
 
-    protected abstract Debug debug();
+    public abstract Debug debug();
 
     protected abstract String getHost();
 
@@ -30,33 +28,10 @@ public abstract class MySQLDatabase {
 
     protected abstract String getPassword();
 
-    protected abstract String getPrefix();
+    public abstract String getPrefix();
 
     protected MySQLDatabase() {
         initPool();
-    }
-
-    public PreparedStatement getStatement(Query query) {
-        String q = query.getQuery().replaceAll("\\{PREFIX\\}", getPrefix());
-
-        try {
-            PreparedStatement statement;
-            if(query.getQuery().startsWith("INSERT")) {
-                statement = pool.getConnection().prepareStatement(q, Statement.RETURN_GENERATED_KEYS);
-            } else {
-                statement = pool.getConnection().prepareStatement(q, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            }
-
-            Object[] values = query.getValues();
-            for(int i = 0; i < values.length; i++) {
-                statement.setObject(i, values[i]);
-            }
-            return statement;
-        } catch (SQLException e) {
-            debug().disable("Could not create statement for database!", e);
-            return null;
-        }
-
     }
 
     public void checkSchema() {
@@ -78,24 +53,37 @@ public abstract class MySQLDatabase {
 
     private int getCurrentSchema() {
         try {
-            ResultSet res = getStatement(new GetSchemaQuery()).executeQuery();
-            res.first();
-            return res.getInt("version");
+            List<Map<String, Object>> res = new GetSchemaQuery(this).executeQuery();
+            return (Integer) res.get(0).get("version");
         } catch (SQLException e) {
             return 0; // Could not get schema, assume that database is not set up
         }
     }
 
-    public static void runStatementAsync(PreparedStatement statement) {
-        AsyncDatabaseUpdateTask.updates.add(statement);
-    }
-
-    public void initPool() {
+    private void initPool() {
         pool = new ComboPooledDataSource();
         String url = String.format("jdbc:mysql://%s:%s/%s", getHost(), getPort(), getDatabase());
         pool.setJdbcUrl(url);
         pool.setUser(getUsername());
         pool.setPassword(getPassword());
+    }
+
+    public static List<Map<String, Object>> toMapList(ResultSet res) throws SQLException {
+        ResultSetMetaData md = res.getMetaData();
+        int columns = md.getColumnCount();
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        while (res.next()){
+            Map<String, Object> row = new HashMap<String, Object>(columns);
+            for(int i=1; i<=columns; ++i){
+                row.put(md.getColumnName(i),res.getObject(i));
+            }
+            list.add(row);
+        }
+        return list;
+    }
+
+    public Connection getRawConnection() throws SQLException {
+        return pool.getConnection();
     }
 
     // -- SCHEMA FUNCTIONS -- //

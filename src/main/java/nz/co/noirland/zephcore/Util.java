@@ -71,6 +71,13 @@ public class Util {
         return Double.parseDouble(format.format(in));
     }
 
+    public static int hexToInt(String hex) {
+        return Integer.parseInt(hex, 16);
+    }
+
+    public static int createRandomHex(int length) {
+        return rand.nextInt((int) Math.pow(0x10, length));
+    }
 
     public static ItemStack createItem(String item, String data) {
         Material material = Material.getMaterial(item);
