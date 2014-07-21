@@ -67,6 +67,17 @@ public class Util {
         return map;
     }
 
+    public static String concatenate(String start, Collection<?> values, String startDelim, String delim) {
+        StringBuilder builder = new StringBuilder(start);
+
+        String d = startDelim;
+        for(Object str : values) {
+            builder.append(d).append(str.toString());
+            d = delim;
+        }
+        return builder.toString();
+    }
+
     public static double round(double in, DecimalFormat format) {
         return Double.parseDouble(format.format(in));
     }
@@ -83,6 +94,18 @@ public class Util {
         Material material = Material.getMaterial(item);
         MaterialData materialData = parseMaterialData(material, data);
         return materialData.toItemStack();
+    }
+
+    public static Map<String, Object> toMap(Location loc) {
+        if(loc == null) return null;
+        Map<String, Object> ret = new HashMap<String, Object>();
+        ret.put("world", loc.getWorld().toString());
+        ret.put("x", loc.getX());
+        ret.put("y", loc.getY());
+        ret.put("z", loc.getZ());
+        ret.put("yaw", loc.getYaw());
+        ret.put("pitch", loc.getPitch());
+        return ret;
     }
 
     @SuppressWarnings("deprecated")
