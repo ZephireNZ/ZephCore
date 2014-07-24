@@ -85,7 +85,7 @@ public abstract class Query {
             statement = getDB().getRawConnection().prepareStatement(q);
 
             for(int i = 0; i < values.length; i++) {
-                statement.setObject(i, values[i]);
+                statement.setObject(i+1, values[i]);
             }
             return statement;
         } catch (SQLException e) {
