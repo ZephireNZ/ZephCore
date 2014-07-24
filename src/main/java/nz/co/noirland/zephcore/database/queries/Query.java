@@ -39,7 +39,7 @@ public abstract class Query {
      * @param value The value
      * @throws IllegalArgumentException if index is out of range
      */
-    protected void setValue(int index, Object value) throws IllegalArgumentException {
+    public void setValue(int index, Object value) throws IllegalArgumentException {
         if(index == 0 || index > values.length) {
             throw new IllegalArgumentException();
         }
