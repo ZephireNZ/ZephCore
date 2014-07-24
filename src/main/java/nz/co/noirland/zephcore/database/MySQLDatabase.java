@@ -1,6 +1,7 @@
 package nz.co.noirland.zephcore.database;
 
-import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.jolbox.bonecp.BoneCP;
+import com.jolbox.bonecp.BoneCPConfig;
 import nz.co.noirland.zephcore.Debug;
 import nz.co.noirland.zephcore.database.queries.GetSchemaQuery;
 
@@ -12,7 +13,7 @@ import java.util.*;
 
 public abstract class MySQLDatabase {
 
-    private ComboPooledDataSource pool;
+    private BoneCP pool;
 
     protected SortedMap<Integer, Schema> schemas = new TreeMap<Integer, Schema>();
 
@@ -61,15 +62,21 @@ public abstract class MySQLDatabase {
     }
 
     private void initPool() {
-        pool = new ComboPooledDataSource();
-        String url = String.format("jdbc:mysql://%s:%s/%s", getHost(), getPort(), getDatabase());
-        pool.setJdbcUrl(url);
-        pool.setUser(getUsername());
-        pool.setPassword(getPassword());
+        BoneCPConfig conf = new BoneCPConfig();
+        conf.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", getHost(), getPort(), getDatabase()));
+        conf.setUser(getUsername());
+        conf.setPassword(getPassword());
+        conf.setMaxConnectionsPerPartition(5);
+
+        try {
+            pool = new BoneCP(conf);
+        } catch (SQLException e) {
+            debug().disable("Unable to connect to database!", e);
+        }
     }
 
     public void close() {
-        pool.close();
+        pool.shutdown();
     }
 
     public static List<Map<String, Object>> toMapList(ResultSet res) throws SQLException {

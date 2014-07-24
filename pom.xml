@@ -23,12 +23,12 @@
             <artifactId>bukkit</artifactId>
             <version>LATEST</version>
             <type>jar</type>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.mchange</groupId>
-            <artifactId>c3p0</artifactId>
-            <version>0.9.2.1</version>
+            <groupId>com.jolbox</groupId>
+            <artifactId>bonecp</artifactId>
+            <version>0.8.0.RELEASE</version>
         </dependency>
     </dependencies>
 
@@ -70,8 +70,16 @@
                     </artifactSet>
                     <relocations>
                         <relocation>
-                            <pattern>com.mchange</pattern>
-                            <shadedPattern>nz.co.noirland.libs.com.mchange</shadedPattern>
+                            <pattern>com.jolbox</pattern>
+                            <shadedPattern>nz.co.noirland.libs</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.slf4j</pattern>
+                            <shadedPattern>nz.co.noirland.libs.slf4j</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.google.common</pattern>
+                            <shadedPattern>nz.co.noirland.libs.guava</shadedPattern>
                         </relocation>
                     </relocations>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
