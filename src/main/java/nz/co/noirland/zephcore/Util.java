@@ -300,6 +300,15 @@ public class Util {
         return rand.nextInt((max - min) + 1) + min;
     }
 
+    /**
+     * Returns a pseudo-random number between 0 (inclusive) and max (exclusive).
+     * @param max Max value, exclusive
+     * @return A random int
+     */
+    public static int randInt(int max) {
+        return rand.nextInt(max);
+    }
+
     public static <T> T randInArray(T[] array) {
         int index = rand.nextInt(array.length);
         return array[index];
