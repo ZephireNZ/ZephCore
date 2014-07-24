@@ -71,7 +71,7 @@ public abstract class Query {
         return ret;
     }
 
-    public PreparedStatement getStatement() {
+    private PreparedStatement getStatement() {
         String q = getQuery().replaceAll("\\{PREFIX\\}", getDB().getPrefix());
 
         try {
