@@ -15,7 +15,7 @@ public class AsyncDatabaseUpdateTask implements Runnable {
     private static volatile boolean stop = false;
 
     private AsyncDatabaseUpdateTask() {
-        new Thread(this).start();
+        new Thread(this, "AsyncDatabaseUpdateTask").start();
     }
 
     public static AsyncDatabaseUpdateTask inst() {
