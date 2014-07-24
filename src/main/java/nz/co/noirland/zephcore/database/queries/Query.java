@@ -4,35 +4,33 @@ import nz.co.noirland.zephcore.database.AsyncDatabaseUpdateTask;
 import nz.co.noirland.zephcore.database.MySQLDatabase;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
-public class Query {
+public abstract class Query {
 
     private Object[] values;
     private String query;
-    private MySQLDatabase db;
+
+    protected abstract MySQLDatabase getDB();
 
     /**
      * An abstract query representation.
      * @param nargs Number of args in query
      * @param query SQL PreparedStatement query to be executed.
      */
-    public Query(MySQLDatabase db, int nargs, String query) {
-        this(db, new Object[nargs-1], query);
+    public Query(int nargs, String query) {
+        this(new Object[nargs], query);
     }
 
-    public Query(MySQLDatabase db, String query) {
-        this(db, 0, query);
+    public Query(String query) {
+        this(0, query);
     }
 
-    public Query(MySQLDatabase db, Object[] values, String query) {
+    public Query(Object[] values, String query) {
         this.values = values;
         this.query = query;
-        this.db = db;
     }
 
     /**
@@ -74,23 +72,24 @@ public class Query {
     }
 
     public PreparedStatement getStatement() {
-        String q = getQuery().replaceAll("\\{PREFIX\\}", db.getPrefix());
+        String q = getQuery().replaceAll("\\{PREFIX\\}", getDB().getPrefix());
 
         try {
             PreparedStatement statement;
-            //TODO: May not be necessary to change add options
-            if(getQuery().startsWith("INSERT")) {
-                statement = db.getRawConnection().prepareStatement(q, Statement.RETURN_GENERATED_KEYS);
-            } else {
-                statement = db.getRawConnection().prepareStatement(q, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            }
+//            //TODO: Check whether these are required any more
+//            if(getQuery().startsWith("INSERT")) {
+//                statement = getDB().getRawConnection().prepareStatement(q, Statement.RETURN_GENERATED_KEYS);
+//            } else {
+//                statement = getDB().getRawConnection().prepareStatement(q, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+//            }
+            statement = getDB().getRawConnection().prepareStatement(q);
 
             for(int i = 0; i < values.length; i++) {
                 statement.setObject(i, values[i]);
             }
             return statement;
         } catch (SQLException e) {
-            db.debug().disable("Could not create statement for database!", e);
+            getDB().debug().disable("Could not create statement for database!", e);
             return null;
         }
     }
