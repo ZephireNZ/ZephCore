@@ -68,6 +68,10 @@ public abstract class MySQLDatabase {
         pool.setPassword(getPassword());
     }
 
+    public void close() {
+        pool.close();
+    }
+
     public static List<Map<String, Object>> toMapList(ResultSet res) throws SQLException {
         ResultSetMetaData md = res.getMetaData();
         int columns = md.getColumnCount();
