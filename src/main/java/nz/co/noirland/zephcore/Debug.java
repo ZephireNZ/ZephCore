@@ -65,8 +65,8 @@ public class Debug {
      * @param e execption to be shown
      */
     public void disable(String error, Throwable e) {
-        debug(e);
         disable(error);
+        e.printStackTrace();
     }
 
     public Logger getLogger() {
