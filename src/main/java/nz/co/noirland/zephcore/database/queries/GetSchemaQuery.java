@@ -2,7 +2,7 @@ package nz.co.noirland.zephcore.database.queries;
 
 import nz.co.noirland.zephcore.database.MySQLDatabase;
 
-public class GetSchemaQuery extends Query {
+public class GetSchemaQuery extends MySQLQuery {
 
     private static final String QUERY = "SELECT `version` FROM `{PREFIX}_schema`";
     private MySQLDatabase db;
