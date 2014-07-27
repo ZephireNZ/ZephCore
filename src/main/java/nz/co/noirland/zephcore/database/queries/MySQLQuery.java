@@ -5,6 +5,7 @@ import nz.co.noirland.zephcore.database.MySQLDatabase;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -76,12 +77,6 @@ public abstract class MySQLQuery implements Query {
 
         try {
             PreparedStatement statement;
-//            //TODO: Check whether these are required any more
-//            if(getQuery().startsWith("INSERT")) {
-//                statement = getDB().getRawConnection().prepareStatement(q, Statement.RETURN_GENERATED_KEYS);
-//            } else {
-//                statement = getDB().getRawConnection().prepareStatement(q, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-//            }
             statement = getDB().getRawConnection().prepareStatement(q);
 
             for(int i = 0; i < values.length; i++) {
@@ -94,4 +89,8 @@ public abstract class MySQLQuery implements Query {
         }
     }
 
+    @Override
+    public String toString() {
+        return String.format("{%s}: %s", this.query, Arrays.toString(this.values));
+    }
 }
