@@ -40,6 +40,24 @@ public class Util {
         return ZephCore.inst().getServer().getOfflinePlayer(name);
     }
 
+    public static String name(UUID uuid) {
+        String name = player(uuid).getName();
+        if(name == null) {
+            name = ZephCore.getNMS().getName(uuid);
+        }
+        if(name == null) {
+            try {
+                name = NameFetcher.getName(uuid);
+                if(name != null) {
+                    ZephCore.getNMS().saveName(uuid, name);
+                }
+            } catch (Exception e) {
+                ZephCore.debug().warning("Could not find name for UUID" + uuid.toString());
+            }
+        }
+        return name;
+    }
+
     public static String formatTime(long millis) {
         if(millis < HOUR) {
             long mins = TimeUnit.MILLISECONDS.toMinutes(millis);

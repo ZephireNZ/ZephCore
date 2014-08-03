@@ -1,6 +1,7 @@
 package nz.co.noirland.zephcore;
 
 import nz.co.noirland.zephcore.database.AsyncDatabaseUpdateTask;
+import nz.co.noirland.zephcore.nms.NMSHandler;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,6 +14,7 @@ public class ZephCore extends JavaPlugin implements Listener {
 
     private static ZephCore inst;
     private static Debug debug;
+    private static NMSHandler nms;
 
     public static ZephCore inst() {
         return inst;
@@ -24,6 +26,7 @@ public class ZephCore extends JavaPlugin implements Listener {
     public void onEnable() {
         inst = this;
         debug = new Debug(this);
+        nms = findNMS();
         setupUUIDFetcher();
         AsyncDatabaseUpdateTask.inst();
         getServer().getPluginManager().registerEvents(this, this);
@@ -42,5 +45,24 @@ public class ZephCore extends JavaPlugin implements Listener {
     public void onLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
         UUIDFetcher.updatePlayer(player.getName(), player.getUniqueId());
+    }
+
+    public static NMSHandler getNMS() {
+        return nms;
+    }
+
+    private NMSHandler findNMS() {
+        String pName = getServer().getClass().getPackage().getName();
+        String ver = pName.substring(pName.lastIndexOf('.') + 1);
+        try {
+            Class<?> clazz = Class.forName("nz.co.noirland.zephcore.nms." + ver + ".NMS");
+            if(NMSHandler.class.isAssignableFrom(clazz)) {
+                return (NMSHandler) clazz.getConstructor().newInstance();
+            }
+            throw new Exception();
+        } catch (Exception e) {
+            debug.disable("Minecraft version " + ver + " unsupported!", e);
+            return null;
+        }
     }
 }
