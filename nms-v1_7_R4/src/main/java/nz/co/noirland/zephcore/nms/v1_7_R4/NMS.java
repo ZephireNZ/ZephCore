@@ -11,7 +11,8 @@ import java.util.UUID;
 public class NMS implements NMSHandler {
 
     @Override
-    public void saveNames() {
+    public void saveName(UUID uuid, String name) {
+        getCache().a(new GameProfile(uuid, name));
         getCache().c();
     }
 
