@@ -117,7 +117,7 @@ public class Util {
     public static Map<String, Object> toMap(Location loc) {
         if(loc == null) return null;
         Map<String, Object> ret = new HashMap<String, Object>();
-        ret.put("world", loc.getWorld().toString());
+        ret.put("world", loc.getWorld().getName());
         ret.put("x", loc.getX());
         ret.put("y", loc.getY());
         ret.put("z", loc.getZ());
