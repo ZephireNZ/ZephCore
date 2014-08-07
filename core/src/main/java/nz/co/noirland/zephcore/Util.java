@@ -49,7 +49,7 @@ public class Util {
             try {
                 name = NameFetcher.getName(uuid);
                 if(name != null) {
-                    ZephCore.getNMS().saveName(uuid, name);
+                    ZephCore.getNMS().saveNames();
                 }
             } catch (Exception e) {
                 ZephCore.debug().warning("Could not find name for UUID" + uuid.toString());
