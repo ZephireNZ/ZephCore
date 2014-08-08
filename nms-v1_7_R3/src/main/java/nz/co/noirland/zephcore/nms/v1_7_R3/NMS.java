@@ -11,9 +11,14 @@ import java.util.UUID;
 public class NMS implements NMSHandler {
 
     @Override
-    public void saveName(UUID uuid, String name) {
+    public void save(UUID uuid, String name) {
         getCache().a(new GameProfile(uuid, name));
         getCache().c();
+    }
+
+    @Override
+    public UUID getUUID(String name) {
+        return getCache().a(name).getId();
     }
 
     @Override

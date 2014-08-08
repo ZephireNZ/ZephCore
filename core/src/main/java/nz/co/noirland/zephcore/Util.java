@@ -29,7 +29,14 @@ public class Util {
     }
 
     public static UUID uuid(String name) {
-        return player(name).getUniqueId();
+        UUID uuid = ZephCore.getNMS().getUUID(name);
+        if(uuid == null) {
+            uuid = UUIDFetcher.getUUID(name);
+            if(uuid != null) {
+                ZephCore.getNMS().save(uuid, name);
+            }
+        }
+        return uuid;
     }
 
     public static OfflinePlayer player(UUID uuid) {
@@ -49,7 +56,7 @@ public class Util {
             try {
                 name = NameFetcher.getName(uuid);
                 if(name != null) {
-                    ZephCore.getNMS().saveName(uuid, name);
+                    ZephCore.getNMS().save(uuid, name);
                 }
             } catch (Exception e) {
                 ZephCore.debug().warning("Could not find name for UUID " + uuid.toString());

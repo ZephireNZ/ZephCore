@@ -5,5 +5,8 @@ import java.util.UUID;
 public interface NMSHandler {
     public abstract String getName(UUID uuid);
 
-    public abstract void saveName(UUID uuid, String name);
+    public abstract void save(UUID uuid, String name);
+
+    public abstract UUID getUUID(String name);
+
 }
