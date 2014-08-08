@@ -18,7 +18,8 @@ public class NMS implements NMSHandler {
 
     @Override
     public UUID getUUID(String name) {
-        return getCache().getProfile(name).getId();
+        GameProfile profile = getCache().getProfile(name);
+        return profile == null ? null : profile.getId();
     }
 
     @Override
