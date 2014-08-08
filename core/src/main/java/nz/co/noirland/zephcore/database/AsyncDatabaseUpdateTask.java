@@ -7,15 +7,13 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class AsyncDatabaseUpdateTask implements Runnable {
+public class AsyncDatabaseUpdateTask extends Thread {
 
     private final static LinkedBlockingQueue<Query> queries = new LinkedBlockingQueue<Query>();
     private static AsyncDatabaseUpdateTask inst;
 
-    private static volatile boolean stop = false;
-
     private AsyncDatabaseUpdateTask() {
-        new Thread(this, "AsyncDatabaseUpdateTask").start();
+        super("AsyncDatabaseUpdateTask");
     }
 
     public static AsyncDatabaseUpdateTask inst() {
@@ -25,8 +23,8 @@ public class AsyncDatabaseUpdateTask implements Runnable {
         return inst;
     }
 
-    public void stop() {
-        stop = true;
+    public void finish() {
+        interrupt();
         LinkedList<Query> drain = new LinkedList<Query>();
         queries.drainTo(drain);
         for(Query query : drain) {
@@ -36,11 +34,12 @@ public class AsyncDatabaseUpdateTask implements Runnable {
 
     @Override
     public void run() {
-        while(!stop) {
-            try {
+        try {
+            while(true) {
                 execute(queries.take());
-            } catch (InterruptedException ignored) {}
-        }
+            }
+        } catch (InterruptedException ignored) {}
+
     }
 
     private void execute(Query query) {
