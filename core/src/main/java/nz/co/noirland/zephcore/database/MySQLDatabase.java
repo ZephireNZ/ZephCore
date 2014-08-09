@@ -13,6 +13,8 @@ import java.util.*;
 
 public abstract class MySQLDatabase {
 
+    private static Set<MySQLDatabase> databases = new HashSet<MySQLDatabase>();
+
     private BoneCP pool;
 
     protected SortedMap<Integer, Schema> schemas = new TreeMap<Integer, Schema>();
@@ -33,6 +35,7 @@ public abstract class MySQLDatabase {
 
     protected MySQLDatabase() {
         initPool();
+        databases.add(this);
     }
 
     public void checkSchema() {
@@ -95,6 +98,10 @@ public abstract class MySQLDatabase {
 
     public Connection getRawConnection() throws SQLException {
         return pool.getConnection();
+    }
+
+    public static Set<MySQLDatabase> getDatabases() {
+        return databases;
     }
 
     // -- SCHEMA FUNCTIONS -- //
