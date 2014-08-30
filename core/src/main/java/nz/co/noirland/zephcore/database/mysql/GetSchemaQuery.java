@@ -1,6 +1,4 @@
-package nz.co.noirland.zephcore.database.queries;
-
-import nz.co.noirland.zephcore.database.MySQLDatabase;
+package nz.co.noirland.zephcore.database.mysql;
 
 public class GetSchemaQuery extends MySQLQuery {
 

@@ -1,9 +1,7 @@
 package nz.co.noirland.zephcore.database;
 
 import nz.co.noirland.zephcore.ZephCore;
-import nz.co.noirland.zephcore.database.queries.Query;
 
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -23,6 +21,10 @@ public class AsyncDatabaseUpdateTask extends Thread {
         return inst;
     }
 
+    /**
+     * Causes the task to complete, by stopping the loop and completing all remaining
+     * queries.
+     */
     public void finish() {
         interrupt();
         LinkedList<Query> drain = new LinkedList<Query>();
@@ -32,6 +34,9 @@ public class AsyncDatabaseUpdateTask extends Thread {
         }
     }
 
+    /**
+     * Main loop for executing threads added to queue.
+     */
     @Override
     public void run() {
         try {
@@ -46,11 +51,15 @@ public class AsyncDatabaseUpdateTask extends Thread {
         try {
             query.execute();
             ZephCore.debug().debug("Executed db update statement " + query.toString());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             ZephCore.debug().warning("Failed to execute update statement " + query.toString(), e);
         }
     }
 
+    /**
+     * Add a query to the queue to be executed later.
+     * @param query Query to execute
+     */
     public static void addQuery(Query query) {
         queries.add(query);
     }

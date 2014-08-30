@@ -1,61 +1,24 @@
-package nz.co.noirland.zephcore.database;
+package nz.co.noirland.zephcore.database.mysql;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
-import nz.co.noirland.zephcore.Debug;
-import nz.co.noirland.zephcore.database.queries.GetSchemaQuery;
+import nz.co.noirland.zephcore.database.Database;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public abstract class MySQLDatabase {
-
-    private static Set<MySQLDatabase> databases = new HashSet<MySQLDatabase>();
+public abstract class MySQLDatabase extends Database {
 
     private BoneCP pool;
 
-    protected SortedMap<Integer, Schema> schemas = new TreeMap<Integer, Schema>();
-
-    public abstract Debug debug();
-
-    protected abstract String getHost();
-
-    protected abstract int getPort();
-
-    protected abstract String getDatabase();
-
-    protected abstract String getUsername();
-
-    protected abstract String getPassword();
-
-    public abstract String getPrefix();
-
-    protected MySQLDatabase() {
-        initPool();
-        databases.add(this);
-    }
-
-    public void checkSchema() {
-        int version = getCurrentSchema();
-        int latest = getLatestSchema();
-        if(version == latest) {
-            return;
-        }
-        if(version > latest) {
-            debug().disable("Database schema is newer than this plugin version!");
-            return;
-        }
-
-        for(Schema schema : schemas.tailMap(version + 1).values()) {
-            schema.run();
-        }
-
-    }
-
-    private int getCurrentSchema() {
+    @Override
+    protected int getCurrentSchema() {
         try {
             List<Map<String, Object>> res = new GetSchemaQuery(this).executeQuery();
             return (Integer) res.get(0).get("version");
@@ -64,7 +27,10 @@ public abstract class MySQLDatabase {
         }
     }
 
-    private void initPool() {
+
+
+    @Override
+    protected void init() {
         BoneCPConfig conf = new BoneCPConfig();
         conf.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s", getHost(), getPort(), getDatabase()));
         conf.setUser(getUsername());
@@ -78,6 +44,7 @@ public abstract class MySQLDatabase {
         }
     }
 
+    @Override
     public void close() {
         pool.shutdown();
     }
@@ -99,19 +66,4 @@ public abstract class MySQLDatabase {
     public Connection getRawConnection() throws SQLException {
         return pool.getConnection();
     }
-
-    public static Set<MySQLDatabase> getDatabases() {
-        return databases;
-    }
-
-    // -- SCHEMA FUNCTIONS -- //
-
-    protected int getLatestSchema() {
-        return schemas.lastKey();
-    }
-
-    protected Schema getSchemaDef(int schema) {
-        return schemas.get(schema);
-    }
-
 }

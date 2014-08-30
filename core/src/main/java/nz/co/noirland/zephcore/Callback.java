@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public abstract class Callback extends BukkitRunnable {
 
-    Plugin plugin;
+    private Plugin plugin;
 
     public Callback(Plugin plugin) {
         this.plugin = plugin;

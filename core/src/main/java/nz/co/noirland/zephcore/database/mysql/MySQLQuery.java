@@ -1,7 +1,7 @@
-package nz.co.noirland.zephcore.database.queries;
+package nz.co.noirland.zephcore.database.mysql;
 
 import nz.co.noirland.zephcore.database.AsyncDatabaseUpdateTask;
-import nz.co.noirland.zephcore.database.MySQLDatabase;
+import nz.co.noirland.zephcore.database.Query;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

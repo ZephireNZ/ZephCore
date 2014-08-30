@@ -1,7 +1,7 @@
 package nz.co.noirland.zephcore;
 
 import nz.co.noirland.zephcore.database.AsyncDatabaseUpdateTask;
-import nz.co.noirland.zephcore.database.MySQLDatabase;
+import nz.co.noirland.zephcore.database.Database;
 import nz.co.noirland.zephcore.nms.NMSHandler;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -37,7 +37,7 @@ public class ZephCore extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         AsyncDatabaseUpdateTask.inst().finish();
-        for(MySQLDatabase db : MySQLDatabase.getDatabases()) {
+        for(Database db : Database.getDatabases()) {
             db.close();
         }
     }
