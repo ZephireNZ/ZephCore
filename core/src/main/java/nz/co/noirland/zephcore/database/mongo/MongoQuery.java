@@ -29,7 +29,6 @@ public abstract class MongoQuery implements Query {
     /**
      * Provides the database that this query is used in. This is required
      * for Async queries to be completed.
-     * @return
      */
     protected abstract MongoDatabase getDB();
 
