@@ -20,6 +20,13 @@ public class Util {
     public static final long DAY = TimeUnit.DAYS.toMillis(1);
 
     private static final Random rand = new Random();
+    private static final ArrayList<TimeUnit> unitsDescending = new ArrayList<TimeUnit>() {{
+        add(TimeUnit.DAYS);
+        add(TimeUnit.HOURS);
+        add(TimeUnit.MINUTES);
+        add(TimeUnit.SECONDS);
+        add(TimeUnit.MILLISECONDS);
+    }};
 
     public static boolean isSign(Block block) {
         return block != null && (block.getState() instanceof Sign);
@@ -344,8 +351,22 @@ public class Util {
 
     public static void cancelFall(Player player) {
         boolean isNearGround = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().isSolid();
-        if(isNearGround) return;
+        if (isNearGround) return;
 
         CancelFallManager.inst().addPlayer(player.getUniqueId());
+    }
+
+    public static long toTicks(long time, TimeUnit unit) {
+        return unit.toSeconds(time) * 20;
+    }
+
+    public static TimeUnit mostSignificantTimeUnit(long millis, TimeUnit startUnit, TimeUnit stopUnit) {
+        int start = (startUnit == null ? 0 : unitsDescending.indexOf(startUnit));
+        Iterator<TimeUnit> it = unitsDescending.listIterator(start);
+        for(TimeUnit unit = it.next(); it.hasNext();) {
+            long newTime = TimeUnit.MILLISECONDS.convert(millis, unit);
+            if(newTime > 0 || unit == stopUnit) return unit;
+        }
+        return TimeUnit.MILLISECONDS;
     }
 }
