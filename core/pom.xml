@@ -12,14 +12,14 @@
 
     <artifactId>zephcore</artifactId>
     <packaging>jar</packaging>
-    <version>2.2</version>
+    <version>3.0</version>
     <name>ZephCore</name>
 
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.9-R0.2</version>
+            <version>1.8-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
@@ -43,6 +43,11 @@
             <groupId>nz.co.noirland</groupId>
             <artifactId>zephcore-nms-v1_7_R4</artifactId>
             <version>v1_7_R4</version>
+        </dependency>
+        <dependency>
+            <groupId>nz.co.noirland</groupId>
+            <artifactId>zephcore-nms-v1_8_R1</artifactId>
+            <version>v1_8_R1</version>
         </dependency>
     </dependencies>
 
