@@ -7,6 +7,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
+/**
+ * @deprecated Please use {@link nz.co.noirland.zephcore.Util#cancelFall}
+ */
 public class CheckFallingTask extends BukkitRunnable {
 
     private UUID player;

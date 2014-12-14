@@ -2,8 +2,10 @@ package nz.co.noirland.zephcore;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.*;
 
@@ -16,7 +18,9 @@ public class Util {
 
     public static final long HOUR = TimeUnit.HOURS.toMillis(1);
     public static final long DAY = TimeUnit.DAYS.toMillis(1);
+
     private static final Random rand = new Random();
+    private static final CancelFallManager fallManager = new CancelFallManager();
 
     public static boolean isSign(Block block) {
         return block != null && (block.getState() instanceof Sign);
@@ -337,5 +341,12 @@ public class Util {
     public static <T> T randInArray(T[] array) {
         int index = rand.nextInt(array.length);
         return array[index];
+    }
+
+    public static void cancelFall(Player player) {
+        boolean isNearGround = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().isSolid();
+        if(isNearGround) return;
+
+        fallManager.addPlayer(player.getUniqueId());
     }
 }
