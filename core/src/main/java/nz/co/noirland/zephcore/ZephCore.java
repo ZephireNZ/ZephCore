@@ -31,6 +31,7 @@ public class ZephCore extends JavaPlugin implements Listener {
         setupUUIDFetcher();
         AsyncDatabaseUpdateTask.inst().start();
         getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(CancelFallManager.inst(), this);
     }
 
     @Override

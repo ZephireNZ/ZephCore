@@ -11,7 +11,19 @@ import java.util.UUID;
 
 public class CancelFallManager implements Listener {
 
+    private static CancelFallManager inst;
     private final HashSet<UUID> falling = new HashSet<UUID>();
+
+    public static CancelFallManager inst() {
+        if(inst == null) {
+            inst = new CancelFallManager();
+        }
+        return inst;
+    }
+
+    private CancelFallManager() {
+
+    }
 
     public void addPlayer(UUID player) {
         falling.add(player);

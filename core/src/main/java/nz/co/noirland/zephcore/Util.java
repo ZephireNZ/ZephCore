@@ -20,7 +20,6 @@ public class Util {
     public static final long DAY = TimeUnit.DAYS.toMillis(1);
 
     private static final Random rand = new Random();
-    private static final CancelFallManager fallManager = new CancelFallManager();
 
     public static boolean isSign(Block block) {
         return block != null && (block.getState() instanceof Sign);
@@ -347,6 +346,6 @@ public class Util {
         boolean isNearGround = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().isSolid();
         if(isNearGround) return;
 
-        fallManager.addPlayer(player.getUniqueId());
+        CancelFallManager.inst().addPlayer(player.getUniqueId());
     }
 }
