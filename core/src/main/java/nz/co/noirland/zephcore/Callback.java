@@ -1,24 +1,30 @@
 package nz.co.noirland.zephcore;
 
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
+import com.comphenix.executors.BukkitExecutors;
+import com.comphenix.executors.BukkitScheduledExecutorService;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+
+import java.util.concurrent.Callable;
 
 /**
- * An abstract class designed to make callbacks easier.
- * Most useful when wanting to do something Async, and then continue back in sync.
+ * Bukkit callback utilising Guava's {@link com.google.common.util.concurrent.ListenableFuture}.
+ * @param <T>
  */
-public abstract class Callback extends BukkitRunnable {
+public abstract class Callback<T> {
 
-    private Plugin plugin;
-
-    public Callback(Plugin plugin) {
-        this.plugin = plugin;
-    }
+    private static final BukkitScheduledExecutorService sync = BukkitExecutors.newSynchronous(ZephCore.inst());
+    private static final BukkitScheduledExecutorService async = BukkitExecutors.newAsynchronous(ZephCore.inst());
 
     /**
-     * Schedule this Callback for running on the next tick.
+     * Registers the given task to be executed async immediately, and then run the callback in sync.
+     * @param task
+     * @param callback
      */
-    public void schedule() {
-        this.runTask(plugin);
+    public Callback(Callable<T> task, FutureCallback<T> callback) {
+        ListenableFuture<T> future = async.submit(task);
+
+        Futures.addCallback(future, callback, sync);
     }
 }

@@ -18,6 +18,10 @@
             <id>spigot</id>
             <url>http://hub.spigotmc.org/nexus/content/groups/public</url>
         </repository>
+        <repository>
+            <id>comphenix-repo</id>
+            <url>http://repo.comphenix.com/content/groups/public</url>
+        </repository>
     </repositories>
 
     <modules>

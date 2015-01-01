@@ -4,3 +4,5 @@ main: nz.co.noirland.zephcore.ZephCore
 name: ZephCore
 startup: postworld
 version: ${version}
+depend:
+- BukkitExecutors
