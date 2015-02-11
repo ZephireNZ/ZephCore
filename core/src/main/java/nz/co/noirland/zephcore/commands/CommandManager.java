@@ -5,6 +5,7 @@ import com.sk89q.intake.CommandCallable;
 import com.sk89q.intake.CommandMapping;
 import com.sk89q.intake.ImmutableCommandMapping;
 import com.sk89q.intake.dispatcher.Dispatcher;
+import com.sk89q.intake.parametric.ParametricBuilder;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -19,6 +20,8 @@ import java.util.List;
 public class CommandManager {
 
     private static CommandManager inst;
+
+    private static final BukkitBindings bindings = new BukkitBindings();
 
     CommandMap commandMap;
     HelpMap helpMap;
@@ -47,6 +50,13 @@ public class CommandManager {
         wrapped.register(commandMap);
 
         registerCommandHelp(mapping, ImmutableList.<String>of());
+    }
+
+    public static ParametricBuilder builder() {
+        ParametricBuilder builder = new ParametricBuilder();
+        builder.addBinding(bindings);
+
+        return builder;
     }
 
     private void registerCommandHelp(CommandMapping command, List<String> parents) {
