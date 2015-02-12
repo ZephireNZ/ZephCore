@@ -111,6 +111,7 @@ public class WrappedCallable extends Command implements TabExecutor {
                 sender.sendMessage(e.getSimpleUsageString("/"));
             }
         } catch (CommandException e) {
+            e.prependStack(getName());
             sendErrorMessage(sender, e.getMessage());
         } catch (AuthorizationException e) {
             sendErrorMessage(sender, e.getMessage());
