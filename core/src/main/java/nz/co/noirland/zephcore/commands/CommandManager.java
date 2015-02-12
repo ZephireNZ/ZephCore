@@ -5,6 +5,7 @@ import com.sk89q.intake.CommandCallable;
 import com.sk89q.intake.CommandMapping;
 import com.sk89q.intake.ImmutableCommandMapping;
 import com.sk89q.intake.dispatcher.Dispatcher;
+import com.sk89q.intake.dispatcher.SimpleDispatcher;
 import com.sk89q.intake.parametric.ParametricBuilder;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -17,7 +18,7 @@ import org.bukkit.plugin.SimplePluginManager;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class CommandManager {
+public class CommandManager extends SimpleDispatcher {
 
     private static CommandManager inst;
 
@@ -39,17 +40,26 @@ public class CommandManager {
         helpMap = Bukkit.getHelpMap();
     }
 
-    public void register(Plugin plugin, CommandCallable command, String... alias) {
-        Validate.notNull(plugin, "Plugin must not be null!");
+    public void registerCommand(CommandCallable command, String prefix, String... alias) {
         Validate.notNull(command, "Command must not be null!");
-        CommandMapping mapping = new ImmutableCommandMapping(command, alias.clone());
+        CommandMapping mapping = new ImmutableCommandMapping(command, alias);
 
         WrappedCallable wrapped = new WrappedCallable(mapping);
 
-        commandMap.register(plugin.getName(), wrapped);
+        commandMap.register(prefix, wrapped);
         wrapped.register(commandMap);
 
+        super.registerCommand(command, alias);
+
         registerCommandHelp(mapping, ImmutableList.<String>of());
+    }
+
+    public void registerCommand(CommandCallable command, Plugin plugin, String... alias) {
+        registerCommand(command, plugin.getName(), alias);
+    }
+
+    public void registerCommand(ParametricBuilder builder, Object commands) {
+        builder.registerMethodsAsCommands(this, commands);
     }
 
     public static ParametricBuilder builder() {
@@ -57,6 +67,11 @@ public class CommandManager {
         builder.addBinding(bindings);
 
         return builder;
+    }
+
+    @Override
+    public void registerCommand(CommandCallable command, String... alias) {
+        registerCommand(command, "intake", alias);
     }
 
     private void registerCommandHelp(CommandMapping command, List<String> parents) {
