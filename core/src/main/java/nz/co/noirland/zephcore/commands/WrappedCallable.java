@@ -122,7 +122,16 @@ public class WrappedCallable extends Command implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return null; //TODO: Implement tab complete
+        CommandLocals locals = new CommandLocals();
+        locals.put(CommandSender.class, sender);
+
+        try {
+            return mapping.getCallable().getSuggestions(Joiner.on(" ").join(args), locals);
+        } catch (CommandException e) {
+            e.prependStack(getName());
+            sendErrorMessage(sender, e.getMessage());
+            return ImmutableList.of();
+        }
     }
 
     protected void sendErrorMessage(CommandSender to, String message) {
