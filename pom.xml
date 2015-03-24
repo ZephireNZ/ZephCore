@@ -22,6 +22,10 @@
             <id>comphenix-repo</id>
             <url>http://repo.comphenix.com/content/groups/public</url>
         </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>http://maven.sk89q.com/repo/</url>
+        </repository>
     </repositories>
 
     <modules>
@@ -29,6 +33,7 @@
         <module>nms-v1_7_R3</module>
         <module>nms-v1_7_R4</module>
         <module>nms-v1_8_R1</module>
+        <module>nms-v1_8_R2</module>
         <module>core</module>
     </modules>
 
