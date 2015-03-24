@@ -12,7 +12,7 @@
 
     <artifactId>zephcore</artifactId>
     <packaging>jar</packaging>
-    <version>3.3-SNAPSHOT</version>
+    <version>3.2.3</version>
     <name>ZephCore</name>
 
     <dependencies>
