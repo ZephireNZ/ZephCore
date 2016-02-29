@@ -1,10 +1,10 @@
-package nz.co.noirland.zephcore.nms.v1_7_R3;
+package nz.co.noirland.zephcore.nms.v1_8_R3;
 
-import net.minecraft.server.v1_7_R3.UserCache;
-import net.minecraft.util.com.mojang.authlib.GameProfile;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.server.v1_8_R3.UserCache;
 import nz.co.noirland.zephcore.nms.NMSHandler;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 
 import java.util.UUID;
 
@@ -18,7 +18,7 @@ public class NMS implements NMSHandler {
 
     @Override
     public UUID getUUID(String name) {
-        GameProfile profile = getCache().a(name);
+        GameProfile profile = getCache().getProfile(name);
         return profile == null ? null : profile.getId();
     }
 

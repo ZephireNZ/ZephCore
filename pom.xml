@@ -11,12 +11,8 @@
 
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
-        </repository>
-        <repository>
             <id>spigot</id>
-            <url>http://hub.spigotmc.org/nexus/content/groups/public</url>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
             <id>comphenix-repo</id>
@@ -30,10 +26,9 @@
 
     <modules>
         <module>nms</module>
-        <module>nms-v1_7_R3</module>
-        <module>nms-v1_7_R4</module>
         <module>nms-v1_8_R1</module>
         <module>nms-v1_8_R2</module>
+        <module>nms-v1_8_R3</module>
         <module>core</module>
     </modules>
 

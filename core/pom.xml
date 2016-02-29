@@ -12,7 +12,7 @@
 
     <artifactId>zephcore</artifactId>
     <packaging>jar</packaging>
-    <version>3.2.4</version>
+    <version>3.2.5</version>
     <name>ZephCore</name>
 
     <dependencies>
@@ -53,18 +53,6 @@
         </dependency>
         <dependency>
             <groupId>nz.co.noirland</groupId>
-            <artifactId>zephcore-nms-v1_7_R3</artifactId>
-            <version>v1_7_R3</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>nz.co.noirland</groupId>
-            <artifactId>zephcore-nms-v1_7_R4</artifactId>
-            <version>v1_7_R4</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>nz.co.noirland</groupId>
             <artifactId>zephcore-nms-v1_8_R1</artifactId>
             <version>v1_8_R1</version>
             <optional>true</optional>
@@ -73,6 +61,12 @@
             <groupId>nz.co.noirland</groupId>
             <artifactId>zephcore-nms-v1_8_R2</artifactId>
             <version>v1_8_R2</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>nz.co.noirland</groupId>
+            <artifactId>zephcore-nms-v1_8_R3</artifactId>
+            <version>v1_8_R3</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
